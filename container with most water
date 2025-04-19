@@ -1,0 +1,27 @@
+#include <stdio.h>
+
+int maxArea(int* height, int heightSize) {
+    int left = 0, right = heightSize - 1;
+    int max_area = 0;
+
+    while (left < right) {
+        // Calculate the area formed by the lines at left and right
+        int width = right - left;
+        int minHeight = (height[left] < height[right]) ? height[left] : height[right];
+        int area = width * minHeight;
+
+        // Update the maximum area
+        if (area > max_area) {
+            max_area = area;
+        }
+
+        // Move the pointer pointing to the shorter line
+        if (height[left] < height[right]) {
+            left++;
+        } else {
+            right--;
+        }
+    }
+
+    return max_area;
+}
