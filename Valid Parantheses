@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+bool isValid(char* s) {
+    int len = strlen(s);
+    char* stack = (char*)malloc(len);
+    int top = -1;
+
+    for (int i = 0; i < len; i++) {
+        char c = s[i];
+        if (c == '(' || c == '{' || c == '[') {
+            stack[++top] = c; // push
+        } else {
+            if (top == -1) {
+                free(stack);
+                return false; // closing without opening
+            }
+            char topChar = stack[top--]; // pop
+            if ((c == ')' && topChar != '(') ||
+                (c == '}' && topChar != '{') ||
+                (c == ']' && topChar != '[')) {
+                free(stack);
+                return false;
+            }
+        }
+    }
+
+    bool result = (top == -1); // if stack is empty, it's valid
+    free(stack);
+    return result;
+}
