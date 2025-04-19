@@ -1,0 +1,45 @@
+typedef struct {
+    int key;
+    int value;
+    int used; // flag to indicate if the entry is used
+} HashEntry;
+
+int hash(int key, int size) {
+    return abs(key) % size;
+}
+
+int* twoSum(int* nums, int numsSize, int target, int* returnSize) {
+    int hashSize = numsSize * 2;
+    HashEntry* hashTable = (HashEntry*)calloc(hashSize, sizeof(HashEntry));
+    int* result = (int*)malloc(2 * sizeof(int));
+    *returnSize = 2;
+
+    for (int i = 0; i < numsSize; i++) {
+        int complement = target - nums[i];
+        int h = hash(complement, hashSize);
+
+        // Search for complement
+        while (hashTable[h].used) {
+            if (hashTable[h].key == complement) {
+                result[0] = hashTable[h].value;
+                result[1] = i;
+                free(hashTable);
+                return result;
+            }
+            h = (h + 1) % hashSize;
+        }
+
+        // Insert current number into hash table
+        h = hash(nums[i], hashSize);
+        while (hashTable[h].used) {
+            h = (h + 1) % hashSize;
+        }
+        hashTable[h].key = nums[i];
+        hashTable[h].value = i;
+        hashTable[h].used = 1;
+    }
+
+    free(hashTable);
+    *returnSize = 0;
+    return NULL;
+}
