@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Function to compare two integers (for sorting)
+int compare(const void *a, const void *b) {
+    return (*(int*)a - *(int*)b);
+}
+
+// Function to find the 4 sum
+void fourSum(int* nums, int numsSize, int target, int*** returnArray, int* returnSize) {
+    if (nums == NULL || numsSize < 4) {
+        *returnSize = 0;
+        *returnArray = NULL;  // Set returnArray to NULL
+        return;
+    }
+
+    // Sort the array to allow the two-pointer technique and skip duplicates
+    qsort(nums, numsSize, sizeof(int), compare);
+
+    *returnSize = 0;
+    int capacity = 1000;  // Initial capacity to store the results
+    *returnArray = (int**)malloc(capacity * sizeof(int*));  // Allocate memory for the array of pointers to quadruplets
+
+    for (int i = 0; i < numsSize - 3; i++) {
+        if (i > 0 && nums[i] == nums[i - 1]) {
+            continue;  // Skip duplicates for the first number
+        }
+
+        for (int j = i + 1; j < numsSize - 2; j++) {
+            if (j > i + 1 && nums[j] == nums[j - 1]) {
+                continue;  // Skip duplicates for the second number
+            }
+
+            int left = j + 1;
+            int right = numsSize - 1;
+
+            while (left < right) {
+                int sum = nums[i] + nums[j] + nums[left] + nums[right];
+                if (sum == target) {
+                    // Found a valid quadruplet
+                    int* quadruplet = (int*)malloc(4 * sizeof(int));  // Allocate space for a single quadruplet
+                    quadruplet[0] = nums[i];
+                    quadruplet[1] = nums[j];
+                    quadruplet[2] = nums[left];
+                    quadruplet[3] = nums[right];
+
+                    // Store the result
+                    if (*returnSize == capacity) {
+                        capacity *= 2;
+                        *returnArray = (int**)realloc(*returnArray, capacity * sizeof(int*));
+                    }
+                    (*returnArray)[*returnSize] = quadruplet;  // Store the pointer to the quadruplet
+                    (*returnSize)++;
+
+                    // Skip duplicates for the third and fourth numbers
+                    while (left < right && nums[left] == nums[left + 1]) {
+                        left++;
+                    }
+                    while (left < right && nums[right] == nums[right - 1]) {
+                        right--;
+                    }
+
+                    left++;
+                    right--;
+                } else if (sum < target) {
+                    left++;
+                } else {
+                    right--;
+                }
+            }
+        }
+    }
+}
+
+// Function to print the result
+void printResult(int** result, int returnSize) {
+    for (int i = 0; i < returnSize; i++) {
+        printf("[");
+        for (int j = 0; j < 4; j++) {
+            printf("%d", result[i][j]);
+            if (j < 3) printf(", ");
+        }
+        printf("]\n");
+    }
+}
+
+int main() {
+    int nums[] = {1, 0, -1, 0, -2, 2};
+    int target = 0;
+    int numsSize = sizeof(nums) / sizeof(nums[0]);
+    int** result;
+    int returnSize;
+
+    // Call the function
+    fourSum(nums, numsSize, target, &result, &returnSize);
+
+    // Print the result
+    printf("Number of quadruplets: %d\n", returnSize);
+    printResult(result, returnSize);
+
+    // Free memory
+    for (int i = 0; i < returnSize; i++) {
+        free(result[i]);
+    }
+    free(result);
+
+    return 0;
+}
