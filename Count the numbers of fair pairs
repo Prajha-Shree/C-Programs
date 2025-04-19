@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Comparator for qsort
+int cmp(const void* a, const void* b) {
+    return (*(int*)a - *(int*)b);
+}
+
+// Binary search: returns the number of elements <= target in nums[0..right]
+int upperBound(int* nums, int left, int right, int target) {
+    int res = left - 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] <= target) {
+            res = mid;
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    return res;
+}
+
+int lowerBound(int* nums, int left, int right, int target) {
+    int res = right + 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] >= target) {
+            res = mid;
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    return res;
+}
+
+long long countFairPairs(int* nums, int numsSize, int lower, int upper) {
+    qsort(nums, numsSize, sizeof(int), cmp);
+    long long count = 0;
+
+    for (int i = 0; i < numsSize - 1; ++i) {
+        int l = lower - nums[i];
+        int u = upper - nums[i];
+
+        int left = lowerBound(nums, i + 1, numsSize - 1, l);
+        int right = upperBound(nums, i + 1, numsSize - 1, u);
+
+        if (left <= right)
+            count += (right - left + 1);
+    }
+
+    return count;
+}
