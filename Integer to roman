@@ -1,0 +1,27 @@
+#include <stdio.h>
+
+char* intToRoman(int num) {
+    // Define the Roman numeral symbols and their values
+    static char result[16]; // To store the result
+    int values[] = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+    char* symbols[] = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+    
+    int index = 0; // To iterate through the arrays
+    int i = 0; // Result index
+    result[0] = '\0'; // Initialize the result string to empty
+
+    // Iterate through all possible Roman numeral values
+    while (num > 0) {
+        while (num >= values[index]) {
+            // Append the Roman numeral symbol to the result
+            for (int j = 0; symbols[index][j] != '\0'; j++) {
+                result[i++] = symbols[index][j];
+            }
+            num -= values[index]; // Subtract the value
+        }
+        index++; // Move to the next value-symbol pair
+    }
+
+    result[i] = '\0'; // Null-terminate the result string
+    return result;
+}
